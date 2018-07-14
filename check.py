@@ -8,7 +8,7 @@ from TVar import *
 from types import FunctionType
 def getType(obj):
     vals = [int,str,type(None)]
-    keys = [Int,Str,Any]
+    keys = [Int,Str,Unit]
     env = dict(zip(vals,keys))
     if type(obj) in vals:
         return env[type(obj)]
@@ -101,7 +101,8 @@ def add( a : Int ,b: Int ) -> Tuple(Int,Any):
     else:
         return (b,c)
 @T
-def func( a : Int ) -> (Int,Any):
-    return add(a,a)
+def func( a : Int ) -> Unit:#(Int,Any):
+    print( add(a,a) )
+    return 
 
 print ( func( 0 ) )

@@ -17,6 +17,10 @@ class Any(TVar):
     def __eq__(self,other):
         return True
 Any = Any()
+class Unit(TVar):
+    def __ge__(self,other):
+        return To(self,other)
+Unit = Unit()        
 class Tuple(TVar):
     def __init__(self,*args):
         self.TVars = tuple(list(args))
@@ -56,4 +60,4 @@ print( (Int >= Int) == (Int >= Int) )
 """
 #print( ( Int >= (List(Int) >= Any) ) == (Int >= (List(Int) >= Any)) )
 # == Int > List(Int) > Any )
-__all__ = ["Int","Str","Any","List","Tuple","TVar","To"]
+__all__ = ["Int","Str","Any","Unit","List","Tuple","TVar","To"]
