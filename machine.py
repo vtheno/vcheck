@@ -1,5 +1,6 @@
 #coding=utf-8
 from opcode import cmp_op
+from TVar import *
 class CheckError(Exception): pass
 def error(msg):
     raise CheckError(msg)
@@ -50,24 +51,40 @@ class Stack(object):
         left_val = self.pop ()
         #print( 'binop:',left_val,right_val,self.s[0:10])
         if left_val == right_val:
-            return self.push(left_val)
+            return self.push(bool)#self.push(left_val)
         else:
             error( "for {} type(s): {} and {}".format(cmp_op[args],repr(left_val),repr(right_val) ) )
     def tup(self,args):
-        val = tuple( reversed( [self.pop () for i in range(args)] ) )
+        val = Tuple( *reversed( [self.pop () for i in range(args)] ) )
         return self.push (val)
     def lst(self,args):
-        val = list( reversed( [self.pop () for i in range(args)] ) )
-        return self.push (val)
+        #val = List( reversed( [self.pop () for i in range(args)] ) )
+        #return self.push (val)
+        pass
     def If(self):
         else_val = self.pop ()
         then_val = self.pop ()
         test = self.pop ()
-        print( 'if:',test,then_val,else_val)
+        #print( 'if:',test,then_val,else_val)
         if then_val == else_val:
             return self.push(then_val)
         else:
             error( "for if type(s): {} and {}".format(repr(then_val),repr(else_val)) )
+    def call(self,args):
+        arglist = [i for i in reversed( [ self.pop () for z in range(args) ] ) ]
+        functyp = self.pop () # TVar TO
+        def arp(to,acc):
+            if not isinstance(to,To):
+                return acc + [to]
+            return arp(to.b,acc + [to.a] )
+        lst = arp(functyp,[ ])
+        ret = lst.pop()
+        print( "arglist:",arglist,"functyp:",functyp,lst )
+        for a,t in zip(arglist,lst):
+            #print( a,t ,a == t )
+            if a != t:
+                error("call function type(s): {} and {}".format(arglist,lst))
+        return self.push(ret)
     def ret(self):
         val = self.pop ()
         typ = self.global_tenv["return"]

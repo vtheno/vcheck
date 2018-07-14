@@ -9,16 +9,27 @@ def get(name,te1,te2):
         return te1[name]
     else:
         return te2[name]
-
+from TVar import *
+from types import FunctionType
+def getType(obj):
+    vals = [int,str,type(None)]
+    keys = [Int,Str,Any]
+    env = dict(zip(vals,keys))
+    if type(obj) in vals:
+        return env[type(obj)]
+    elif type(obj) == FunctionType:
+        def arp(lst,acc):
+            if lst == [ ]:
+                return acc
+            return arp(lst[1:], To( lst[0] ,acc ) )
+        f = [i for i in obj.__annotations__.values() ] 
+        l = f.pop()
+        #print( "arp:",arp(f,l ) )
+        return arp(f,l)
+    else:
+        return obj
 class T(object):
-    def __init__(self,func):
-        self.func = func
-        self.global_env = func.__globals__
-        self.t_env_1 = {}
-        self.t_env_2 = {}
-        self.t_env_1.update( func.__annotations__ )
-        self.co = func.__code__
-        self.bins = list( self.co.co_code )
+    def clear(self):
         if None in self.co.co_consts and self.bins[-4:] == [opmap["LOAD_CONST"],0,opmap["RETURN_VALUE"],0]:
             self.toks = self.bins[0:-4]
         else:
@@ -32,13 +43,40 @@ class T(object):
                 self.toks[n] = 0
                 self.toks[n + 1] = 0
             n+=2
-        self.e_names = dict( zip(range(len(self.co.co_names)),
-                                 [type(self.global_env.get(i,None)) for i in self.co.co_names]) )
-        # e_names = global_env
-        self.e_consts = dict( zip(range(len(self.co.co_consts)),
-                                  [type(i) for i in self.co.co_consts]) )
-        self.e_varnames = dict( zip(range(len(self.co.co_varnames)), 
-                                    [self.t_env_1.get(i,type(None)) for i in self.co.co_varnames] ))
+    def __init__(self,func):
+        self.func = func
+        self.t_env_1 = {}
+        self.t_env_1.update( func.__annotations__ )
+        self.t_env_2 = {}
+        self.t_env_2.update( func.__globals__ )
+        self.t_env_2.update ( {'str':To(Any,Str),'int':To(Any,Int) } )
+        self.co = func.__code__
+        self.bins = list( self.co.co_code )
+        self.clear()
+        def processName(lst):
+            nlst = [ ]
+            for i in lst:
+                t = self.t_env_2.get(i,None)
+                t = getType(t)
+                nlst += [t]
+            return nlst
+        def processConst(consts):
+            nconsts = [ ]
+            for i in consts:
+                t = getType(i)
+                nconsts += [ t ]
+            return nconsts
+        def processLocal(local):
+            alocal = [ ]
+            for i in local:
+                t = self.t_env_1.get(i,None)
+                t = getType(t)
+                alocal += [ t ]
+            return alocal
+        # process function name to functype
+        self.e_names = dict( zip(range(len(self.co.co_names)),processName(self.co.co_names) ) )
+        self.e_consts = dict( zip(range(len(self.co.co_consts)),processConst(self.co.co_consts)) )
+        self.e_varnames = dict( zip(range(len(self.co.co_varnames)), processLocal(self.co.co_varnames) ) )
         self.e_names.update( {'return':self.t_env_1['return']} )
         self.st = Stack( self.e_varnames,self.e_names,self.e_consts)
         # ltenv gtenv ctenv , stack size
@@ -50,14 +88,14 @@ class T(object):
         out = parse(self.toks)
         print( "runout:",out )
         print( runout(out,self.st) )
-    def __call__(self):
-        pass
+    def __call__(self,*args,**kds):
+        return self.func(*args,**kds)
 
-        
-c = object()
+
+c = "fuck"
 d = 233
-@T
-def add( a : int ,b: int ) -> (int,object):
+#@T
+def add( a : Int ,b: Int ) -> Tuple(Int,Any):
     if a >= b :
         if a == b:
             return (d,c)
@@ -65,5 +103,8 @@ def add( a : int ,b: int ) -> (int,object):
             return (a,c)
     else:
         return (b,c)
-
+@T
+def func( a : Int ) -> (Int,Any):
+    return add(a,a)
 #dis.dis(add)
+print ( func( 0 ) )

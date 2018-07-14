@@ -20,7 +20,10 @@ def unpack(lst : List(int) ) -> Tuple(int,List(int)) :
         raise ParseError("unpack (nil) | {}" .format(lst))
 
 def parseArgs( toks : List(int) ) -> Tuple( int,List(int) ):
-    return toks[0],toks[1:]
+    if toks != [ ]:
+        return toks[0],toks[1:]
+    else:
+        raise ParseError("parseArgs (nil) | {}" .format(lst))
 def parseAtom( toks : List(int) ) -> Tuple(object,List(int)) :
     t,rest = unpack(toks)
     if t == opmap["LOAD_CONST"]:
@@ -56,9 +59,15 @@ def parseAtom( toks : List(int) ) -> Tuple(object,List(int)) :
     elif t == opmap["BINARY_MULTIPLY"]:
         args,rest1 = parseArgs(rest)
         return ( BIN_OP('*',args),rest1 )
+    elif t == opmap["BINARY_POWER"]:
+        args,rest1 = parseArgs(rest)
+        return ( BIN_OP('**',args),rest1 )
     elif t == opmap["BINARY_TRUE_DIVIDE"]:
         args,rest1 = parseArgs(rest)
         return ( BIN_OP('/',args),rest1 )
+    elif t == opmap["BINARY_FLOOR_DIVIDE"]:
+        args,rest1 = parseArgs(rest)
+        return ( BIN_OP('//',args),rest1 )
     elif t == opmap["COMPARE_OP"]:
         args,rest1 = parseArgs(rest)
         return ( CMP_OP(args),rest1 )
@@ -70,9 +79,15 @@ def parseAtom( toks : List(int) ) -> Tuple(object,List(int)) :
     elif t == opmap["JUMP_FORWARD"]:
         args,rest1 = parseArgs(rest)
         return ( FORWARD(args),rest1[args:] )
+    elif t == opmap["CALL_FUNCTION"]:
+        args,rest1 = parseArgs(rest)
+        return ( CALL(args),rest1 )
     elif t in [0,opmap["NOP"]]:
         args,rest1 = parseArgs(rest)
         return ( NOP(args) ,rest1)
+    elif t in opmap.values():
+        args,rest1 = parseArgs(rest)
+        return ( NOP(args),rest1 )
     else:
         raise ParseError ("ParseAtomError: no match {} , {}".format(repr(t),rest))
 def parseExpr( toks : List(int) ) -> Tuple(object,List(int)) :

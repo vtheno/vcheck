@@ -43,6 +43,9 @@ class IF(Expr):
 class FORWARD(Expr):
     def __init__(self,args):
         self.args = args
+class CALL(Expr):
+    def __init__(self,args):
+        self.args = args
 class NOP(Expr):
     def __init__(self,args):
         self.args = args
@@ -79,8 +82,10 @@ def runout( expr : Expr , s : Stack ):
         runout(expr.then_dec,s)
         runout(expr.else_dec,s)
         s.If ()
+    elif isinstance(expr,CALL):
+        s.call(expr.args)
     elif isinstance(expr,Ret):
         s.ret ()
     else:
         raise Exception("Not find {}".format(repr(expr)))
-    print( expr,s.s[:10] )
+    #print( expr,s.s[:10] )
