@@ -43,10 +43,10 @@ class T(object):
     def __init__(self,func):
         self.func = func
         self.t_env_1 = {}
-        self.t_env_1.update( func.__annotations__ )
+        self.t_env_1.update ( func.__annotations__ )
         self.t_env_2 = {}
-        self.t_env_2.update( func.__globals__ )
-        self.t_env_2.update ( {'str':To(Any,Str),'int':To(Any,Int) } )
+        self.t_env_2.update ( func.__globals__ )
+        self.t_env_2.update ( {'str':To(Any,Str),'int':To(Any,Int),'print':To(Any,Unit) } )
         self.co = func.__code__
         self.bins = list( self.co.co_code )
         self.clear()

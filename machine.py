@@ -80,6 +80,8 @@ class Stack(object):
         lst = arp(functyp,[ ])
         ret = lst.pop()
         print( "arglist:",arglist,"functyp:",functyp,lst )
+        if len(arglist) != len(lst):
+            error("call function argcount type(s): {} and {}".format(len(arglist),len(lst)) )
         for a,t in zip(arglist,lst):
             #print( a,t ,a == t )
             if a != t:
