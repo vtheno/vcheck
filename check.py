@@ -77,32 +77,16 @@ class T(object):
         self.e_names.update( {'return':self.t_env_1['return']} )
         self.st = Stack( self.e_varnames,self.e_names,self.e_consts)
         # ltenv gtenv ctenv , stack size
-        dis.dis(func)
-        print( self.e_varnames,self.e_names,self.e_consts)
+        #dis.dis(func)
+        #print( self.e_varnames,self.e_names,self.e_consts)
         self.parse()
         
     def parse(self):
         out = parse(self.toks)
-        print( "runout:",out )
-        print( runout(out,self.st) )
+        #print( "runout:",out )
+        runout(out,self.st)
     def __call__(self,*args,**kds):
         return self.func(*args,**kds)
 
 
-c = "test"
-d = 233
-@T
-def add( a : Int ,b: Int ) -> Tuple(Int,Any):
-    if a >= b :
-        if a == b:
-            return (d,c)
-        else:
-            return (a,c)
-    else:
-        return (b,c)
-@T
-def func( a : Int ) -> Unit:#(Int,Any):
-    print( add(a,a) )
-    return 
-
-print ( func( 0 ) )
+__all__ = ["T"]
