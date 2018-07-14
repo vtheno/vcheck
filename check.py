@@ -4,11 +4,6 @@ import dis
 from machine import Stack
 from data import runout
 from opcode import opmap
-def get(name,te1,te2):
-    if name in te1.keys():
-        return te1[name]
-    else:
-        return te2[name]
 from TVar import *
 from types import FunctionType
 def getType(obj):
@@ -26,6 +21,8 @@ def getType(obj):
         l = f.pop()
         #print( "arp:",arp(f,l ) )
         return arp(f,l)
+    elif isinstance(obj,T):
+        return getType(obj.func)
     else:
         return obj
 class T(object):
@@ -94,7 +91,7 @@ class T(object):
 
 c = "test"
 d = 233
-#@T
+@T
 def add( a : Int ,b: Int ) -> Tuple(Int,Any):
     if a >= b :
         if a == b:
@@ -106,5 +103,5 @@ def add( a : Int ,b: Int ) -> Tuple(Int,Any):
 @T
 def func( a : Int ) -> (Int,Any):
     return add(a,a)
-#dis.dis(add)
+
 print ( func( 0 ) )
