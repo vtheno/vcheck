@@ -92,7 +92,7 @@ class T(object):
         return self.func(*args,**kds)
 
 
-c = "fuck"
+c = "test"
 d = 233
 #@T
 def add( a : Int ,b: Int ) -> Tuple(Int,Any):

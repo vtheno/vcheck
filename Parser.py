@@ -1,9 +1,9 @@
 #coding=utf-8
-from vtype import *
+from TVar import *
 from data import *
 from opcode import opname,opmap
 class ParseError(Exception): pass
-def strip( tok : int ,toks : List(int) ) -> List(int) :
+def strip( tok : Int ,toks : List(Int) ) -> List(Int) :
     #print( "strip:",tok,toks)
     if toks == [ ]:
         raise ParseError("strip error ,rest is nil \n tok: {} rest: {}".format(repr(tok),toks))
@@ -13,18 +13,18 @@ def strip( tok : int ,toks : List(int) ) -> List(int) :
             return xs
         else:
             raise ParseError("strip no match tok ,{} , {}".format(repr(tok),toks))
-def unpack(lst : List(int) ) -> Tuple(int,List(int)) :
+def unpack(lst : List(Int) ) -> Tuple(Int,List(Int)) :
     if lst != [ ]:
         return lst[0],lst[1:]
     else:
         raise ParseError("unpack (nil) | {}" .format(lst))
 
-def parseArgs( toks : List(int) ) -> Tuple( int,List(int) ):
+def parseArgs( toks : List(Int) ) -> Tuple( Int,List(Int) ):
     if toks != [ ]:
         return toks[0],toks[1:]
     else:
         raise ParseError("parseArgs (nil) | {}" .format(lst))
-def parseAtom( toks : List(int) ) -> Tuple(object,List(int)) :
+def parseAtom( toks : List(Int) ) -> Tuple(Any,List(Int)) :
     t,rest = unpack(toks)
     if t == opmap["LOAD_CONST"]:
         args,rest1 = parseArgs(rest)
@@ -90,10 +90,10 @@ def parseAtom( toks : List(int) ) -> Tuple(object,List(int)) :
         return ( NOP(args),rest1 )
     else:
         raise ParseError ("ParseAtomError: no match {} , {}".format(repr(t),rest))
-def parseExpr( toks : List(int) ) -> Tuple(object,List(int)) :
+def parseExpr( toks : List(Int) ) -> Tuple(Any,List(Int)) :
     exp1,rest1 = parseAtom( toks )
     return parseRest(exp1,rest1)
-def parseRest( exp1 : object,toks : List(int) ) -> Tuple(object,List(int)) :
+def parseRest( exp1 : Any,toks : List(Int) ) -> Tuple(Any,List(Int)) :
     if toks == [ ]: 
         return (exp1,toks)
     return (exp1,toks)
@@ -111,7 +111,7 @@ Atom = Num ...
 DEC = E | DEC
 """
 
-def parse(inp : List(int) ) -> object:
+def parse(inp : List(Int) ) -> Any:
     #return parseExpr( inp )
     return parseDec( inp , [ ] )
 def read(inps):
