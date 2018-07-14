@@ -1,0 +1,34 @@
+*** Try using Convert python bytecode to Simple AST and using Stack Machine to simple type check
+*** usage
+    #+BEGIN_SRC python
+      from TVar import *
+      from check import T
+      @T
+      def sum( ilst : [Int] ) -> Int :
+          if ilst == [ ]:
+              return 0
+          else:
+              return ilst[0] + sum(ilst[1:])
+      """
+      this example is right 
+      but next example is not right
+      """
+    #+END_SRC
+    - bad usage:
+      #+BEGIN_SRC python
+        from TVar import *
+        from check import T
+        @T
+        def sum( ilst : [Int] ) -> Int :
+            if ilst == [ ]:
+                return None
+            else:
+                return ilst[0] + sum(ilst[1:])
+      #+END_SRC
+      - there will raise error
+	#+BEGIN_SRC python
+          # when ilst is empty list then sum function return None , None in TVar is Unit ,
+          # but sum function __annotations__ return type is Int , so , will raise a Error of typecheck
+          # machine.CheckError: for return type(s): Int and Unit
+	#+END_SRC
+

@@ -18,10 +18,11 @@ def func( a : Int ) -> Unit:#(Int,Any):
     return 
 """
 @T
-def Sum( lst : List(Int) ) -> Int:
+def sum( lst : List(Int) ) -> Int:
     if lst == [ ]:
         return 0
-    return lst[0] + Sum(lst[1:])
+    else:
+        return lst[0] + sum(lst[1:])
 """
 @T
 def main() -> Unit:
@@ -32,4 +33,4 @@ if __name__ == '__main__':
     main ()
 """
 #print ( func( 0 ) )
-print ( Sum( [1,2,3,4] ) )
+#print ( sum( [1,2,3,4] ) )
