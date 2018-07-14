@@ -47,6 +47,7 @@ class T(object):
         self.t_env_2 = {}
         self.t_env_2.update ( func.__globals__ )
         self.t_env_2.update ( {'str':To(Any,Str),'int':To(Any,Int),'print':To(Any,Unit) } )
+        self.t_env_2.update ( { func.__name__ : func } )
         self.co = func.__code__
         self.bins = list( self.co.co_code )
         self.clear()
@@ -77,8 +78,8 @@ class T(object):
         self.e_names.update( {'return':self.t_env_1['return']} )
         self.st = Stack( self.e_varnames,self.e_names,self.e_consts)
         # ltenv gtenv ctenv , stack size
-        #dis.dis(func)
-        #print( self.e_varnames,self.e_names,self.e_consts)
+        dis.dis(func)
+        print( self.e_varnames,self.e_names,self.e_consts)
         self.parse()
         
     def parse(self):

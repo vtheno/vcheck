@@ -68,6 +68,12 @@ def parseAtom( toks : List(Int) ) -> Tuple(Any,List(Int)) :
     elif t == opmap["BINARY_FLOOR_DIVIDE"]:
         args,rest1 = parseArgs(rest)
         return ( BIN_OP('//',args),rest1 )
+    elif t == opmap["BUILD_SLICE"]:
+        args,rest1 = parseArgs(rest)
+        return ( SLICE(args),rest1 )
+    elif t == opmap["BINARY_SUBSCR"]:
+        args,rest1 = parseArgs(rest)
+        return ( SUB_SCR(args),rest1)
     elif t == opmap["COMPARE_OP"]:
         args,rest1 = parseArgs(rest)
         return ( CMP_OP(args),rest1 )

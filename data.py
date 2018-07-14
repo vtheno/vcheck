@@ -30,6 +30,12 @@ class BIN_OP(Expr):
     def __init__(self,name,args):
         self.name = name
         self.args = args 
+class SLICE(Expr):
+    def __init__(self,args):
+        self.args = args
+class SUB_SCR(Expr):
+    def __init__(self,args):
+        self.args = args
 class CMP_OP(Expr):
     def __init__(self,args):
         self.args = args
@@ -78,6 +84,10 @@ def runout( expr : Expr , s : Stack ):
         s.tup(expr.args)
     elif isinstance(expr,Lst):
         s.lst(expr.args)
+    elif isinstance(expr,SLICE):
+        s.slice(expr.args)
+    elif isinstance(expr,SUB_SCR):
+        s.sub_scr(expr.args)
     elif isinstance(expr,IF):
         runout(expr.then_dec,s)
         runout(expr.else_dec,s)

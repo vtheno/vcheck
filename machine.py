@@ -55,12 +55,41 @@ class Stack(object):
         else:
             error( "for {} type(s): {} and {}".format(cmp_op[args],repr(left_val),repr(right_val) ) )
     def tup(self,args):
-        val = Tuple( *reversed( [self.pop () for i in range(args)] ) )
+        lst = list(reversed( [self.pop () for i in range(args)] ))
+        if lst == [ ]:
+            return self.push( Unit )
+        val = Tuple( *lst)
         return self.push (val)
     def lst(self,args):
-        #val = List( reversed( [self.pop () for i in range(args)] ) )
-        #return self.push (val)
-        pass
+        val = list( reversed( [self.pop () for i in range(args)] )  )
+        if val == [ ]:
+            return self.push( List(Any) )
+        flag = val.pop()
+        for v in val:
+            if v != flag:
+                error( "for {} type(s): {} and {}".format("["+flag+"]",v,flag))
+        return self.push ( List(flag) )
+    def slice(self,args):
+        end = self.pop ()
+        start = self.pop ()
+        if (end == Unit or end == Int) and ( start == Int or start == Unit ):
+            return self.push( [Int] ) 
+        else:
+            error("for slice type(s): slice({},{})".format(start,end) )
+    def sub_scr(self,args):
+        index = self.pop ()
+        lst = self.pop ()
+        if isinstance(lst,List):
+            if index == Int :
+                typ = lst.tvar[0]
+                return self.push(typ)
+            elif index == [Int]:
+                typ = List(Int)
+                return self.push(typ)
+            else:
+                error("for subscr type(s): {} and {}".format(Int,index) )
+        else:
+            error("for subscr type(s): {} and {}".format(lst,List) )
     def If(self):
         else_val = self.pop ()
         then_val = self.pop ()
@@ -79,7 +108,7 @@ class Stack(object):
             return arp(to.b,acc + [to.a] )
         lst = arp(functyp,[ ])
         ret = lst.pop()
-        #print( "arglist:",arglist,"functyp:",functyp,lst )
+        #print( "arglist:",arglist,"functyp:",functyp , lst )
         if len(arglist) != len(lst):
             error("call function argcount type(s): {} and {}".format(len(arglist),len(lst)) )
         for a,t in zip(arglist,lst):
