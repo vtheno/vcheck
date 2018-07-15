@@ -46,9 +46,15 @@ class IF(Expr):
         self.else_dec = else_dec
     def __repr__(self):
         return "IF [" + repr(self.then_dec) + "," + repr(self.else_dec) + "]"
-class FORWARD(Expr):
-    def __init__(self,args):
+class FOR(Expr):
+    def __init__(self,args,block):
         self.args = args
+        self.block = block
+    def __repr__(self):
+        return "FOR [ {} ]".format( repr(self.block) )
+#class FORWARD(Expr):
+#    def __init__(self,args):
+#        self.args = args
 class CALL(Expr):
     def __init__(self,args):
         self.args = args
@@ -88,6 +94,9 @@ def runout( expr : Expr , s : Stack ):
         s.slice(expr.args)
     elif isinstance(expr,SUB_SCR):
         s.sub_scr(expr.args)
+    elif isinstance(expr,FOR):
+        s.For ()
+        runout(expr.block,s)
     elif isinstance(expr,IF):
         runout(expr.then_dec,s)
         runout(expr.else_dec,s)
@@ -98,4 +107,6 @@ def runout( expr : Expr , s : Stack ):
         s.ret ()
     else:
         raise Exception("Not find {}".format(repr(expr)))
+    #print( s.s[:10] )
+    #print( expr )
     #print( expr,s.s[:10] )

@@ -6,11 +6,14 @@ from data import runout
 from opcode import opmap
 from TVar import *
 from types import FunctionType
+class getTypeError(Exception): pass
 def getType(obj):
     vals = [int,str,type(None)]
     keys = [Int,Str,Unit]
     env = dict(zip(vals,keys))
-    if type(obj) in vals:
+    if isinstance(obj,TVar):
+        return obj
+    elif type(obj) in vals:
         return env[type(obj)]
     elif type(obj) == FunctionType:
         def arp(lst,acc):
@@ -23,8 +26,15 @@ def getType(obj):
         return arp(f,l)
     elif isinstance(obj,T):
         return getType(obj.func)
-    else:
+    elif isinstance(obj,tuple):
+        return Tuple( *[getType(i) for i in obj] )
+    elif ( isinstance(obj,list) and len(obj) == 1):
+        for i in obj:
+            if not isinstance(i,TVar):
+                raise getTypeError("Get Type Error for: {}".format(( type(obj),obj)) )
         return obj
+    else:
+        raise getTypeError("Get Type Error for: {}".format(( type(obj),obj)) )
 class T(object):
     def clear(self):
         if None in self.co.co_consts and self.bins[-4:] == [opmap["LOAD_CONST"],0,opmap["RETURN_VALUE"],0]:
@@ -81,6 +91,7 @@ class T(object):
         dis.dis(func)
         print( self.e_varnames,self.e_names,self.e_consts)
         self.parse()
+        print( self.st.global_tenv,self.st.local_tenv,self.st.const_tenv )
         
     def parse(self):
         out = parse(self.toks)

@@ -3,22 +3,11 @@ from TVar import *
 from data import *
 from opcode import opname,opmap
 class ParseError(Exception): pass
-def strip( tok : Int ,toks : List(Int) ) -> List(Int) :
-    #print( "strip:",tok,toks)
-    if toks == [ ]:
-        raise ParseError("strip error ,rest is nil \n tok: {} rest: {}".format(repr(tok),toks))
-    else:
-        x,xs = toks[0],toks[1:]
-        if tok == x:
-            return xs
-        else:
-            raise ParseError("strip no match tok ,{} , {}".format(repr(tok),toks))
 def unpack(lst : List(Int) ) -> Tuple(Int,List(Int)) :
     if lst != [ ]:
         return lst[0],lst[1:]
     else:
         raise ParseError("unpack (nil) | {}" .format(lst))
-
 def parseArgs( toks : List(Int) ) -> Tuple( Int,List(Int) ):
     if toks != [ ]:
         return toks[0],toks[1:]
@@ -82,12 +71,14 @@ def parseAtom( toks : List(Int) ) -> Tuple(Any,List(Int)) :
         left = parseDec( rest1[:args] , [ ] )
         right = parseDec( rest1[args:] , [ ]  )
         return ( IF(args,left,right),[] )
-    elif t == opmap["JUMP_FORWARD"]:
-        args,rest1 = parseArgs(rest)
-        return ( FORWARD(args),rest1[args:] )
     elif t == opmap["CALL_FUNCTION"]:
         args,rest1 = parseArgs(rest)
         return ( CALL(args),rest1 )
+    elif t == opmap["FOR_ITER"]:
+        args,rest1 = parseArgs(rest)
+        block = parseDec( rest1[:args],[ ] )
+        rs = rest1[args:]
+        return ( FOR(args,block),rs )
     elif t in [0,opmap["NOP"]]:
         args,rest1 = parseArgs(rest)
         return ( NOP(args) ,rest1)

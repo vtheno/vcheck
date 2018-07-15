@@ -30,6 +30,7 @@ class Stack(object):
     def store_fast(self,args):
         val = self.pop ( )
         self.local_tenv[args] = val
+        #print( 's_fast:',val,self.local_tenv)
         return 
     def push_global(self,args):
         val = self.global_tenv[args]
@@ -79,9 +80,12 @@ class Stack(object):
     def sub_scr(self,args):
         index = self.pop ()
         lst = self.pop ()
-        if isinstance(lst,List):
+        if isinstance(lst,List) or ( isinstance(lst,list) and len(lst) == 1):
             if index == Int :
-                typ = lst.tvar[0]
+                if isinstance(lst,List):
+                    typ = lst.tvar[0]
+                else:
+                    typ = lst[0]
                 return self.push(typ)
             elif index == [Int]:
                 typ = List(Int)
@@ -99,6 +103,19 @@ class Stack(object):
             return self.push(then_val)
         else:
             error( "for if type(s): {} and {}".format(repr(then_val),repr(else_val)) )
+    def For(self):
+        iter_val = self.pop ()
+        #print( "iter_val:",iter_val,self.s[:10] )
+        if isinstance(iter_val,List) or ( isinstance(iter_val,list) and len(iter_val) == 1):
+            if isinstance(iter_val,List):
+                t_val = iter_val.tvar[0]
+            else:
+                t_val = iter_val[0]
+            top = self.push( t_val )
+            #print( "iter_val:",iter_val,self.s[:10] )
+            return top
+        else:
+            error("for iter type(s): {} and {}".format(iter_val,List) )
     def call(self,args):
         arglist = [i for i in reversed( [ self.pop () for z in range(args) ] ) ]
         functyp = self.pop () # TVar TO
